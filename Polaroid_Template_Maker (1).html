@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A4 Polaroid Template Maker</title>
+    <style>
+        :root {
+            --red: #c01818;
+            --red-dark: #500808;
+            --red-soft: #fce8e8;
+            --red-border: #e0a8a8;
+            --page: #e8e8e8;
+            --workspace: #f0f0f0;
+            --white: #fff;
+            --text: #1a1a1a;
+            --muted: #555
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--page);
+            font-family: Segoe UI, Arial, sans-serif;
+            color: var(--text)
+        }
+
+        .top-rail {
+            height: 6px;
+            background: var(--red)
+        }
+
+        header {
+            height: 125px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 18px 42px;
+            gap: 28px
+        }
+
+        header:before,
+        header:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            background: #fce8e8;
+            width: 650px;
+            height: 420px;
+            right: -80px;
+            top: -300px
+        }
+
+        header:after {
+            background: #f8d0d0;
+            width: 520px;
+            height: 360px;
+            right: 60px;
+            top: -240px
+        }
+
+        .brand-icon {
+            z-index: 1;
+            width: 100px;
+            height: 82px;
+            position: relative;
+            flex: none
+        }
+
+        .printer {
+            position: absolute;
+            background: #c01818;
+            left: 12px;
+            top: 25px;
+            width: 65px;
+            height: 40px;
+            border-radius: 5px
+        }
+
+        .printer-top {
+            position: absolute;
+            background: #e02020;
+            left: 23px;
+            top: 9px;
+            width: 44px;
+            height: 29px;
+            border-radius: 3px
+        }
+
+        .printer-top:after {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            background: #fce8e8
+        }
+
+        .paper {
+            position: absolute;
+            left: 25px;
+            top: 50px;
+            width: 48px;
+            height: 23px;
+            background: white;
+            border-radius: 2px
+        }
+
+        .paper:before {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 5px;
+            width: 22px;
+            height: 5px;
+            background: #c01818
+        }
+
+        .photo-mark {
+            position: absolute;
+            right: 0;
+            top: 39px;
+            width: 30px;
+            height: 32px;
+            background: white;
+            border: 2px solid #c01818;
+            transform: rotate(-12deg)
+        }
+
+        .photo-mark:before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #e02020
+        }
+
+        .photo-mark:after {
+            content: "";
+            position: absolute;
+            bottom: 3px;
+            left: 3px;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-bottom: 12px solid #e02020
+        }
+
+        .brand-divider {
+            height: 75px;
+            width: 3px;
+            background: #e06060;
+            z-index: 1
+        }
+
+        .brand-name {
+            font-size: clamp(22px, 3vw, 34px);
+            font-weight: 800;
+            color: #500808;
+            z-index: 1;
+            letter-spacing: .2px
+        }
+
+        .app {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            min-height: calc(100vh - 160px)
+        }
+
+        .sidebar {
+            width: 310px;
+            flex: none;
+            background: white;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 175px)
+        }
+
+        .side-heading {
+            padding: 15px 15px 8px;
+            color: var(--red);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: .6px
+        }
+
+        .tools {
+            overflow: auto;
+            padding: 8px 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: 1px solid var(--red-border);
+            background: var(--red-soft);
+            color: #701a1a;
+            border-radius: 8px;
+            font-weight: 700;
+            padding: 10px;
+            font-size: 13px;
+            text-align: left
+        }
+
+        button:hover {
+            background: #f8d0d0
+        }
+
+        button.primary {
+            background: var(--red);
+            border-color: var(--red);
+            color: white
+        }
+
+        button:disabled {
+            opacity: .45;
+            cursor: not-allowed
+        }
+
+        .property-panel {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 11px;
+            margin-top: 8px;
+            background: #fff9f9
+        }
+
+        .property-panel h3 {
+            margin: 0 0 10px;
+            font-size: 13px;
+            color: #700
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 8px 0
+        }
+
+        .field label {
+            font-size: 11px;
+            color: #555;
+            font-weight: 700
+        }
+
+        .field input[type=number],
+        .field select {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 7px;
+            font: inherit;
+            font-size: 12px
+        }
+
+        .field input[type=range] {
+            width: 100%
+        }
+
+        .field-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        .field input[type=color] {
+            width: 100%;
+            height: 32px;
+            border: 0;
+            padding: 0;
+            background: none
+        }
+
+        .small-note {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.45;
+            padding: 4px 2px 8px
+        }
+
+        .workspace {
+            flex: 1;
+            min-width: 0;
+            background: var(--workspace);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: auto
+        }
+
+        .page {
+            width: min(100%, 1120px);
+            aspect-ratio: 1754/1240;
+            background: white;
+            box-shadow: 0 2px 12px #0002;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: clamp(6px, 1vw, 14px);
+            padding: clamp(14px, 2vw, 28px);
+            position: relative
+        }
+
+        .card {
+            background: #fff;
+            aspect-ratio: 2.1/3.4;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            border: 1px solid #aaa;
+            min-width: 0;
+            cursor: pointer;
+            padding-top: 3.6%;
+            overflow: visible
+        }
+
+        .card.selected {
+            outline: 2px solid #2563eb;
+            outline-offset: 3px;
+            z-index: 2
+        }
+
+        .photo-window {
+            width: 85.7%;
+            aspect-ratio: 1.8/2.6;
+            background: #e8edf2;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .photo-window img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform-origin: center;
+            user-select: none;
+            pointer-events: none
+        }
+
+        .placeholder {
+            color: #94a3b8;
+            font-size: 30px;
+            font-weight: 600
+        }
+
+        .remove {
+            position: absolute;
+            right: -9px;
+            top: -9px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: #e5484d;
+            color: white;
+            text-align: center;
+            padding: 0;
+            line-height: 20px;
+            font-size: 18px;
+            z-index: 3;
+            box-shadow: 0 1px 4px #0003
+        }
+
+        .qty {
+            position: absolute;
+            left: -8px;
+            top: -8px;
+            background: #222;
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 7px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 3
+        }
+
+        .status {
+            height: 30px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            color: #666;
+            font-size: 12px
+        }
+
+        .status strong {
+            color: var(--red)
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .file-input {
+            display: none
+        }
+
+        .page.dragover {
+            outline: 3px dashed #c01818;
+            outline-offset: 3px
+        }
+
+        @media(max-width:950px) {
+            header {
+                height: 100px;
+                padding: 12px 20px
+            }
+
+            .app {
+                flex-direction: column
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: none
+            }
+
+            .tools {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .property-panel {
+                grid-column: 1/-1
+            }
+
+            .workspace {
+                min-height: 400px;
+                justify-content: flex-start
+            }
+
+            .page {
+                min-width: 650px
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0
+            }
+
+            body {
+                background: white
+            }
+
+            .top-rail,
+            header,
+            .sidebar,
+            .status,
+            .remove,
+            .qty {
+                display: none !important
+            }
+
+            .app {
+                display: block;
+                padding: 0;
+                margin: 0;
+                min-height: 0
+            }
+
+            .workspace {
+                padding: 0;
+                margin: 0;
+                background: white;
+                overflow: visible;
+                display: block
+            }
+
+            .page {
+                width: 297mm;
+                height: 210mm;
+                aspect-ratio: auto;
+                box-shadow: none;
+                padding: 5mm 6mm;
+                gap: 2.5mm;
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                background: var(--print-bg, white) !important
+            }
+
+            .card {
+                width: auto;
+                height: auto;
+                aspect-ratio: 2.1/3.4;
+                border: 1px solid #aaa;
+                cursor: default;
+                outline: none !important;
+                box-shadow: none !important;
+                padding-top: 3.6%
+            }
+
+            .card.selected {
+                outline: none !important
+            }
+
+            .photo-window {
+                width: 85.7%;
+                aspect-ratio: 1.8/2.6
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-rail"></div>
+    <header>
+        <div class="brand-icon">
+            <div class="printer"></div>
+            <div class="printer-top"></div>
+            <div class="paper"></div>
+            <div class="photo-mark"></div>
+        </div>
+        <div class="brand-divider"></div>
+        <div class="brand-name">J&amp;V Printing Services</div>
+    </header>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="side-heading">⚙ &nbsp; EDITING TOOLS</div>
+            <div class="tools">
+                <button id="undoBtn">↶ Undo</button><button id="redoBtn">↷ Redo</button><button id="addImageBtn">▣ Add /
+                    Replace Image</button><button id="multiBtn">▧ Add Multiple Images</button><button id="rotateLeft">↶
+                    Rotate Left</button><button id="rotateRight">↷ Rotate Right</button><button id="frameColorBtn">●
+                    Selected Frame Color</button><button id="allFrameColorBtn">● All Frame Color</button><button
+                    id="pageColorBtn">◯ Page Color</button><button id="fillBtn">◆ Page Fill Style</button><button
+                    id="removeBtn">× Remove Selected</button><button id="restoreBtn">↺ Restore All</button><button
+                    id="exportBtn">⇩ Export / Print</button><button class="primary" id="printBtn">🖨 Print</button>
+                <section class="property-panel">
+                    <h3>🖼 Selected Photo Properties</h3>
+                    <div class="field"><label>Copies / Quantity</label><input type="number" id="qtyInput" min="1"
+                            max="99" value="1"></div>
+                    <div class="field"><label>Zoom / Crop</label><input type="range" id="zoomInput" min="100" max="250"
+                            value="100"><small id="zoomLabel">100%</small></div>
+                    <div class="field-inline">
+                        <div class="field"><label>Horizontal Position</label><input type="range" id="posX" min="0"
+                                max="100" value="50"></div>
+                        <div class="field"><label>Vertical Position</label><input type="range" id="posY" min="0"
+                                max="100" value="50"></div>
+                    </div>
+                    <div class="field"><label>Image Fit</label><select id="fitInput">
+                            <option value="cover">Fill / Crop</option>
+                            <option value="contain">Fit / Show Entire Image</option>
+                        </select></div>
+                    <div class="field"><label>Photo Frame Color</label><input type="color" id="propColor"></div><button
+                        id="resetPhotoProps">Reset selected photo properties</button>
+                </section>
+                <div class="small-note">Drag and drop images onto the page or use Add Multiple Images. Quantity is
+                    stored per slot and shown as a badge. Browser printing uses the print dialog; use A4 Landscape.
+                </div>
+            </div>
+        </aside>
+        <main class="workspace">
+            <div class="page" id="page" title="Drop images here"></div>
+        </main>
+    </div>
+    <div class="status"><span id="statusText">Ready</span><strong>J&amp;V Printing Services • A4 Landscape</strong>
+    </div>
+    <input class="file-input" type="file" id="imageInput" accept="image/*"><input class="file-input" type="file"
+        id="multiInput" accept="image/*" multiple><input class="file-input" type="color" id="colorInput">
+    <script>(() => {
+            const page = document.getElementById('page'), imageInput = document.getElementById('imageInput'), multiInput = document.getElementById('multiInput'), colorInput = document.getElementById('colorInput');
+            const cards = Array.from({ length: 10 }, () => ({ image: null, angle: 0, color: '#ffffff', visible: true, qty: 1, zoom: 100, posX: 50, posY: 50, fit: 'cover' })); let selected = 0, pageColor = '#ffffff', fillMode = 'solid', gradient = ['#ffffff', '#fce8e8'], pattern = 'dots', undoStack = [], redoStack = [];
+            const snapshot = () => ({ cards: cards.map(c => ({ ...c })), selected, pageColor, fillMode, gradient: [...gradient], pattern }); function save() { undoStack.push(snapshot()); if (undoStack.length > 50) undoStack.shift(); redoStack = []; updateButtons() } function restore(s) { s.cards.forEach((c, i) => Object.assign(cards[i], c)); selected = s.selected; pageColor = s.pageColor; fillMode = s.fillMode; gradient = [...s.gradient]; pattern = s.pattern; render() }
+            function updateButtons() { document.getElementById('undoBtn').disabled = !undoStack.length; document.getElementById('redoBtn').disabled = !redoStack.length }
+            function setBackground() { page.style.background = fillMode === 'gradient' ? `linear-gradient(to bottom, ${gradient[0]}, ${gradient[1]})` : fillMode === 'pattern' ? patternCSS() : pageColor }
+            function patternCSS() { let base = pageColor, ink = shade(pageColor, .85); switch (pattern) { case 'dots': return `radial-gradient(${ink} 1.5px, transparent 1.5px) 0 0/20px 20px, ${base}`; case 'grid': return `linear-gradient(${ink} 1px,transparent 1px) 0 0/30px 30px,linear-gradient(90deg,${ink} 1px,transparent 1px) 0 0/30px 30px,${base}`; case 'diagonal': return `repeating-linear-gradient(135deg,transparent 0 16px,${ink} 16px 17px,transparent 17px 32px),${base}`; default: return `repeating-linear-gradient(45deg,transparent 0 16px,${ink} 16px 17px,transparent 17px 32px),repeating-linear-gradient(135deg,transparent 0 16px,${ink} 16px 17px,transparent 17px 32px),${base}` } }
+            function shade(hex, f) { let n = parseInt(hex.slice(1), 16), r = Math.floor((n >> 16) * f), g = Math.floor(((n >> 8) & 255) * f), b = Math.floor((n & 255) * f); return `rgb(${r},${g},${b})` }
+            function updateProperties() { const c = cards[selected]; document.getElementById('qtyInput').value = c.qty; document.getElementById('zoomInput').value = c.zoom; document.getElementById('zoomLabel').textContent = c.zoom + '%'; document.getElementById('posX').value = c.posX; document.getElementById('posY').value = c.posY; document.getElementById('fitInput').value = c.fit; document.getElementById('propColor').value = c.color }
+            function render() { page.innerHTML = ''; setBackground(); cards.forEach((c, i) => { let el = document.createElement('div'); el.className = 'card' + (i === selected ? ' selected' : '') + (c.visible ? '' : ' hidden-card'); el.style.background = c.color; el.dataset.index = i; let frame = document.createElement('div'); frame.className = 'photo-window'; if (c.image) { let img = document.createElement('img'); img.src = c.image; img.style.transform = `rotate(${c.angle}deg) scale(${c.zoom / 100})`; img.style.objectPosition = `${c.posX}% ${c.posY}%`; img.style.objectFit = c.fit; frame.appendChild(img) } else { let p = document.createElement('div'); p.className = 'placeholder'; p.textContent = '+'; frame.appendChild(p) } el.appendChild(frame); if (c.visible) { if (c.qty > 1) { let badge = document.createElement('span'); badge.className = 'qty'; badge.textContent = '×' + c.qty; el.appendChild(badge) } let rm = document.createElement('button'); rm.className = 'remove'; rm.title = 'Remove frame'; rm.textContent = '×'; rm.onclick = e => { e.stopPropagation(); selected = i; removeCard(i) }; el.appendChild(rm) } el.onclick = () => { selected = i; render() }; page.appendChild(el) }); let visible = cards.filter(c => c.visible).length; document.getElementById('statusText').textContent = `Selected slot ${selected + 1} • ${cards[selected].image ? 'Image loaded' : 'Empty slot'} • Qty ${cards[selected].qty} • ${visible}/10 frames visible`; updateButtons(); updateProperties() }
+            function removeCard(i) { if (!cards[i].visible) return; save(); cards[i].visible = false; let visible = cards.map((c, j) => c.visible ? j : -1).filter(j => j >= 0); if (visible.length && !cards[selected].visible) selected = visible[0]; render() }
+            function loadFiles(files, startAtSelected = true) { const chosen = [...files].filter(f => f.type.startsWith('image/')); if (!chosen.length) return; let targets = []; if (startAtSelected) { targets.push(selected); for (let i = 0; i < cards.length; i++)if (i !== selected && cards[i].visible && !cards[i].image) targets.push(i) } else targets = cards.map((c, i) => c.visible && !c.image ? i : -1).filter(i => i >= 0); if (!targets.length) { alert('No empty visible slots. Remove/restore frames or replace an existing slot.'); return } save(); let count = Math.min(chosen.length, targets.length); let remaining = count; chosen.slice(0, count).forEach((file, k) => { let reader = new FileReader(); reader.onload = () => { let c = cards[targets[k]]; c.image = reader.result; c.angle = 0; c.zoom = 100; c.posX = 50; c.posY = 50; c.fit = 'cover'; c.qty = 1; remaining--; if (!remaining) { selected = targets[0]; render() } }; reader.readAsDataURL(file) }); if (chosen.length > targets.length) alert(`Loaded ${count} image(s). ${chosen.length - count} file(s) skipped because slots are full.`) }
+            imageInput.onchange = () => { if (imageInput.files.length) loadFiles(imageInput.files, true); imageInput.value = '' }; multiInput.onchange = () => { if (multiInput.files.length) loadFiles(multiInput.files, true); multiInput.value = '' };
+            document.getElementById('addImageBtn').onclick = () => { if (!cards[selected].visible) return; imageInput.click() }; document.getElementById('multiBtn').onclick = () => multiInput.click();
+            function rotate(deg) { if (!cards[selected].image) { alert('Add an image to the selected slot first.'); return } save(); cards[selected].angle = (cards[selected].angle + deg + 360) % 360; render() } document.getElementById('rotateLeft').onclick = () => rotate(-90); document.getElementById('rotateRight').onclick = () => rotate(90);
+            document.getElementById('qtyInput').onchange = e => { let n = Math.max(1, Math.min(99, parseInt(e.target.value) || 1)); save(); cards[selected].qty = n; render() }; document.getElementById('zoomInput').oninput = e => { cards[selected].zoom = +e.target.value; document.getElementById('zoomLabel').textContent = e.target.value + '%'; render() }; document.getElementById('zoomInput').onchange = () => save();['posX', 'posY'].forEach(id => { document.getElementById(id).oninput = e => { cards[selected][id] = +e.target.value; render() }; document.getElementById(id).onchange = () => save() }); document.getElementById('fitInput').onchange = e => { save(); cards[selected].fit = e.target.value; render() }; document.getElementById('propColor').onchange = e => { save(); cards[selected].color = e.target.value; render() }; document.getElementById('resetPhotoProps').onclick = () => { save(); let c = cards[selected]; c.angle = 0; c.zoom = 100; c.posX = 50; c.posY = 50; c.fit = 'cover'; c.qty = 1; c.color = '#ffffff'; render() };
+            document.getElementById('frameColorBtn').onclick = () => pickColor(cards[selected].color, c => { save(); cards[selected].color = c; render() }); document.getElementById('allFrameColorBtn').onclick = () => pickColor(cards[selected].color, c => { save(); cards.forEach(card => { if (card.visible) card.color = c }); render() }); document.getElementById('pageColorBtn').onclick = () => pickColor(pageColor, c => { save(); pageColor = c; render() }); function pickColor(initial, cb) { colorInput.value = initial; colorInput.onchange = () => cb(colorInput.value); colorInput.click() }
+            document.getElementById('fillBtn').onclick = () => { let mode = prompt('Page fill style:\n1 - Solid Color\n2 - Gradient\n3 - Pattern', fillMode === 'solid' ? '1' : fillMode === 'gradient' ? '2' : '3'); if (mode === null) return; mode = mode.trim(); if (!['1', '2', '3'].includes(mode)) { alert('Invalid selection.'); return } save(); fillMode = ({ '1': 'solid', '2': 'gradient', '3': 'pattern' })[mode]; if (fillMode === 'gradient') { let a = prompt('Gradient start color (hex):', gradient[0]); if (a === null) return; let b = prompt('Gradient end color (hex):', gradient[1]); if (b === null) return; if (/^#[0-9a-f]{6}$/i.test(a) && /^#[0-9a-f]{6}$/i.test(b)) gradient = [a, b]; else alert('Invalid hex color; kept previous gradient.') } else if (fillMode === 'pattern') { let p = prompt('Pattern type:\n1 - Dots\n2 - Grid\n3 - Diagonal\n4 - Crosshatch', ({ 'dots': '1', 'grid': '2', 'diagonal': '3', 'crosshatch': '4' })[pattern]); if (p === null) return; pattern = ({ '1': 'dots', '2': 'grid', '3': 'diagonal', '4': 'crosshatch' })[p] || 'dots' } render() };
+            document.getElementById('removeBtn').onclick = () => removeCard(selected); document.getElementById('restoreBtn').onclick = () => { save(); cards.forEach(c => c.visible = true); render() }; document.getElementById('undoBtn').onclick = () => { if (!undoStack.length) return; redoStack.push(snapshot()); restore(undoStack.pop()) }; document.getElementById('redoBtn').onclick = () => { if (!redoStack.length) return; undoStack.push(snapshot()); restore(redoStack.pop()) }; document.getElementById('printBtn').onclick = () => window.print(); document.getElementById('exportBtn').onclick = () => window.print();
+            page.addEventListener('dragover', e => { e.preventDefault(); page.classList.add('dragover') }); page.addEventListener('dragleave', () => page.classList.remove('dragover')); page.addEventListener('drop', e => { e.preventDefault(); page.classList.remove('dragover'); if (e.dataTransfer.files?.length) loadFiles(e.dataTransfer.files, true) });
+            render();
+        })();</script>
+</body>
+
+</html>

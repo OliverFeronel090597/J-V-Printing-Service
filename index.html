@@ -15,7 +15,7 @@
             --workspace: #f0f0f0;
             --white: #fff;
             --text: #1a1a1a;
-            --muted: #555;
+            --muted: #555
         }
 
         * {
@@ -176,7 +176,7 @@
         }
 
         .sidebar {
-            width: 270px;
+            width: 310px;
             flex: none;
             background: white;
             border: 1px solid #ccc;
@@ -186,7 +186,7 @@
         }
 
         .side-heading {
-            padding: 17px 15px 10px;
+            padding: 15px 15px 8px;
             color: var(--red);
             font-size: 14px;
             font-weight: 800;
@@ -207,22 +207,15 @@
             border: 1px solid var(--red-border);
             background: var(--red-soft);
             color: #701a1a;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 700;
-            padding: 12px 10px;
-            transition: .15s;
+            padding: 10px;
             font-size: 13px;
             text-align: left
         }
 
         button:hover {
-            background: #f8d0d0;
-            color: var(--red-dark)
-        }
-
-        button:active {
-            transform: translateY(1px);
-            background: #f0b8b8
+            background: #f8d0d0
         }
 
         button.primary {
@@ -231,13 +224,71 @@
             color: white
         }
 
-        button.primary:hover {
-            background: #a01414
-        }
-
         button:disabled {
             opacity: .45;
             cursor: not-allowed
+        }
+
+        .property-panel {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 11px;
+            margin-top: 8px;
+            background: #fff9f9
+        }
+
+        .property-panel h3 {
+            margin: 0 0 10px;
+            font-size: 13px;
+            color: #700
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 8px 0
+        }
+
+        .field label {
+            font-size: 11px;
+            color: #555;
+            font-weight: 700
+        }
+
+        .field input[type=number],
+        .field select {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 7px;
+            font: inherit;
+            font-size: 12px
+        }
+
+        .field input[type=range] {
+            width: 100%
+        }
+
+        .field-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        .field input[type=color] {
+            width: 100%;
+            height: 32px;
+            border: 0;
+            padding: 0;
+            background: none
+        }
+
+        .small-note {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.45;
+            padding: 4px 2px 8px
         }
 
         .workspace {
@@ -261,8 +312,6 @@
             grid-template-rows: repeat(2, 1fr);
             gap: clamp(6px, 1vw, 14px);
             padding: clamp(14px, 2vw, 28px);
-            align-content: center;
-            justify-content: center;
             position: relative
         }
 
@@ -330,6 +379,19 @@
             box-shadow: 0 1px 4px #0003
         }
 
+        .qty {
+            position: absolute;
+            left: -8px;
+            top: -8px;
+            background: #222;
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 7px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 3
+        }
+
         .status {
             height: 30px;
             background: white;
@@ -353,14 +415,12 @@
             display: none
         }
 
-        .small-note {
-            font-size: 11px;
-            color: #666;
-            line-height: 1.45;
-            padding: 4px 2px 8px
+        .page.dragover {
+            outline: 3px dashed #c01818;
+            outline-offset: 3px
         }
 
-        @media(max-width:900px) {
+        @media(max-width:950px) {
             header {
                 height: 100px;
                 padding: 12px 20px
@@ -380,16 +440,17 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr))
             }
 
+            .property-panel {
+                grid-column: 1/-1
+            }
+
             .workspace {
-                min-height: 400px
+                min-height: 400px;
+                justify-content: flex-start
             }
 
             .page {
                 min-width: 650px
-            }
-
-            .workspace {
-                justify-content: flex-start
             }
         }
 
@@ -406,7 +467,9 @@
             .top-rail,
             header,
             .sidebar,
-            .status {
+            .status,
+            .remove,
+            .qty {
                 display: none !important
             }
 
@@ -445,24 +508,16 @@
                 cursor: default;
                 outline: none !important;
                 box-shadow: none !important;
-                padding-top: 3.6%;
+                padding-top: 3.6%
             }
 
             .card.selected {
                 outline: none !important
             }
 
-            .remove {
-                display: none !important
-            }
-
             .photo-window {
                 width: 85.7%;
                 aspect-ratio: 1.8/2.6
-            }
-
-            .card.hidden-card {
-                display: none !important
             }
         }
     </style>
@@ -484,59 +539,67 @@
         <aside class="sidebar">
             <div class="side-heading">⚙ &nbsp; EDITING TOOLS</div>
             <div class="tools">
-                <button id="undoBtn">↶ &nbsp; Undo</button><button id="redoBtn">↷ &nbsp; Redo</button>
-                <button id="addImageBtn">▣ &nbsp; Add / Replace Image</button><button id="rotateLeft">↶ &nbsp; Rotate
-                    Left</button><button id="rotateRight">↷ &nbsp; Rotate Right</button>
-                <button id="frameColorBtn">● &nbsp; Frame Color</button><button id="allFrameColorBtn">● &nbsp; All Frame
-                    Color</button><button id="pageColorBtn">◯ &nbsp; Page Color</button>
-                <button id="fillBtn">◆ &nbsp; Page Fill Style</button><button id="removeBtn">× &nbsp; Remove
-                    Selected</button><button id="restoreBtn">↺ &nbsp; Restore All</button>
-                <button id="exportBtn">⇩ &nbsp; Export / Print</button><button class="primary" id="printBtn">🖨 &nbsp;
-                    Print</button>
-                <div class="small-note">Print uses your browser's print dialog. Choose A4, Landscape, and scale 100% or
-                    Fit when available.</div>
+                <button id="undoBtn">↶ Undo</button><button id="redoBtn">↷ Redo</button><button id="addImageBtn">▣ Add /
+                    Replace Image</button><button id="multiBtn">▧ Add Multiple Images</button><button id="rotateLeft">↶
+                    Rotate Left</button><button id="rotateRight">↷ Rotate Right</button><button id="frameColorBtn">●
+                    Selected Frame Color</button><button id="allFrameColorBtn">● All Frame Color</button><button
+                    id="pageColorBtn">◯ Page Color</button><button id="fillBtn">◆ Page Fill Style</button><button
+                    id="removeBtn">× Remove Selected</button><button id="restoreBtn">↺ Restore All</button><button
+                    id="exportBtn">⇩ Export / Print</button><button class="primary" id="printBtn">🖨 Print</button>
+                <section class="property-panel">
+                    <h3>🖼 Selected Photo Properties</h3>
+                    <div class="field"><label>Copies / Quantity</label><input type="number" id="qtyInput" min="1"
+                            max="99" value="1"></div>
+                    <div class="field"><label>Zoom / Crop</label><input type="range" id="zoomInput" min="100" max="250"
+                            value="100"><small id="zoomLabel">100%</small></div>
+                    <div class="field-inline">
+                        <div class="field"><label>Horizontal Position</label><input type="range" id="posX" min="0"
+                                max="100" value="50"></div>
+                        <div class="field"><label>Vertical Position</label><input type="range" id="posY" min="0"
+                                max="100" value="50"></div>
+                    </div>
+                    <div class="field"><label>Image Fit</label><select id="fitInput">
+                            <option value="cover">Fill / Crop</option>
+                            <option value="contain">Fit / Show Entire Image</option>
+                        </select></div>
+                    <div class="field"><label>Photo Frame Color</label><input type="color" id="propColor"></div><button
+                        id="resetPhotoProps">Reset selected photo properties</button>
+                </section>
+                <div class="small-note">Drag and drop images onto the page or use Add Multiple Images. Quantity is
+                    stored per slot and shown as a badge. Browser printing uses the print dialog; use A4 Landscape.
+                </div>
             </div>
         </aside>
         <main class="workspace">
-            <div class="page" id="page"></div>
+            <div class="page" id="page" title="Drop images here"></div>
         </main>
     </div>
-    <div class="status"><span id="statusText">Ready</span><strong>J&amp;V Printing Services &nbsp;•&nbsp; A4
-            Landscape</strong></div>
-    <input class="file-input" type="file" id="imageInput" accept="image/*"><input class="file-input" type="color"
-        id="colorInput">
-    <script>
-        (() => {
-            const page = document.getElementById('page'), imageInput = document.getElementById('imageInput'), colorInput = document.getElementById('colorInput');
-            const cards = Array.from({ length: 10 }, () => ({ image: null, angle: 0, color: '#ffffff', visible: true })); let selected = 0, pageColor = '#ffffff', fillMode = 'solid', gradient = ['#ffffff', '#fce8e8'], pattern = 'dots', undoStack = [], redoStack = [];
-            const snapshot = () => ({ cards: cards.map(c => ({ ...c })), selected, pageColor, fillMode, gradient: [...gradient], pattern });
-            function save() { undoStack.push(snapshot()); if (undoStack.length > 50) undoStack.shift(); redoStack = []; updateButtons() }
-            function restore(s) { s.cards.forEach((c, i) => Object.assign(cards[i], c)); selected = s.selected; pageColor = s.pageColor; fillMode = s.fillMode; gradient = [...s.gradient]; pattern = s.pattern; render() }
+    <div class="status"><span id="statusText">Ready</span><strong>J&amp;V Printing Services • A4 Landscape</strong>
+    </div>
+    <input class="file-input" type="file" id="imageInput" accept="image/*"><input class="file-input" type="file"
+        id="multiInput" accept="image/*" multiple><input class="file-input" type="color" id="colorInput">
+    <script>(() => {
+            const page = document.getElementById('page'), imageInput = document.getElementById('imageInput'), multiInput = document.getElementById('multiInput'), colorInput = document.getElementById('colorInput');
+            const cards = Array.from({ length: 10 }, () => ({ image: null, angle: 0, color: '#ffffff', visible: true, qty: 1, zoom: 100, posX: 50, posY: 50, fit: 'cover' })); let selected = 0, pageColor = '#ffffff', fillMode = 'solid', gradient = ['#ffffff', '#fce8e8'], pattern = 'dots', undoStack = [], redoStack = [];
+            const snapshot = () => ({ cards: cards.map(c => ({ ...c })), selected, pageColor, fillMode, gradient: [...gradient], pattern }); function save() { undoStack.push(snapshot()); if (undoStack.length > 50) undoStack.shift(); redoStack = []; updateButtons() } function restore(s) { s.cards.forEach((c, i) => Object.assign(cards[i], c)); selected = s.selected; pageColor = s.pageColor; fillMode = s.fillMode; gradient = [...s.gradient]; pattern = s.pattern; render() }
             function updateButtons() { document.getElementById('undoBtn').disabled = !undoStack.length; document.getElementById('redoBtn').disabled = !redoStack.length }
             function setBackground() { page.style.background = fillMode === 'gradient' ? `linear-gradient(to bottom, ${gradient[0]}, ${gradient[1]})` : fillMode === 'pattern' ? patternCSS() : pageColor }
             function patternCSS() { let base = pageColor, ink = shade(pageColor, .85); switch (pattern) { case 'dots': return `radial-gradient(${ink} 1.5px, transparent 1.5px) 0 0/20px 20px, ${base}`; case 'grid': return `linear-gradient(${ink} 1px,transparent 1px) 0 0/30px 30px,linear-gradient(90deg,${ink} 1px,transparent 1px) 0 0/30px 30px,${base}`; case 'diagonal': return `repeating-linear-gradient(135deg,transparent 0 16px,${ink} 16px 17px,transparent 17px 32px),${base}`; default: return `repeating-linear-gradient(45deg,transparent 0 16px,${ink} 16px 17px,transparent 17px 32px),repeating-linear-gradient(135deg,transparent 0 16px,${ink} 16px 17px,transparent 17px 32px),${base}` } }
             function shade(hex, f) { let n = parseInt(hex.slice(1), 16), r = Math.floor((n >> 16) * f), g = Math.floor(((n >> 8) & 255) * f), b = Math.floor((n & 255) * f); return `rgb(${r},${g},${b})` }
-            function render() {
-                page.innerHTML = ''; setBackground(); cards.forEach((c, i) => { let el = document.createElement('div'); el.className = 'card' + (i === selected ? ' selected' : '') + (c.visible ? '' : ' hidden-card'); el.style.background = c.color; el.dataset.index = i; if (!c.visible) el.classList.add('hidden-card'); let frame = document.createElement('div'); frame.className = 'photo-window'; if (c.image) { let img = document.createElement('img'); img.src = c.image; img.style.transform = `rotate(${c.angle}deg)`; frame.appendChild(img) } else { let p = document.createElement('div'); p.className = 'placeholder'; p.textContent = '+'; frame.appendChild(p) } el.appendChild(frame); if (c.visible) { let rm = document.createElement('button'); rm.className = 'remove'; rm.title = 'Remove this frame'; rm.textContent = '×'; rm.onclick = e => { e.stopPropagation(); selected = i; removeCard(i) }; el.appendChild(rm) } el.onclick = () => { selected = i; render() }; page.appendChild(el) });
-                let visible = cards.filter(c => c.visible).length; document.getElementById('statusText').textContent = `Selected Polaroid ${selected + 1} • ${cards[selected].image ? 'Image loaded' : 'Empty photo slot'} • ${visible}/10 frames visible. Click red × to remove a frame.`; updateButtons()
-            }
+            function updateProperties() { const c = cards[selected]; document.getElementById('qtyInput').value = c.qty; document.getElementById('zoomInput').value = c.zoom; document.getElementById('zoomLabel').textContent = c.zoom + '%'; document.getElementById('posX').value = c.posX; document.getElementById('posY').value = c.posY; document.getElementById('fitInput').value = c.fit; document.getElementById('propColor').value = c.color }
+            function render() { page.innerHTML = ''; setBackground(); cards.forEach((c, i) => { let el = document.createElement('div'); el.className = 'card' + (i === selected ? ' selected' : '') + (c.visible ? '' : ' hidden-card'); el.style.background = c.color; el.dataset.index = i; let frame = document.createElement('div'); frame.className = 'photo-window'; if (c.image) { let img = document.createElement('img'); img.src = c.image; img.style.transform = `rotate(${c.angle}deg) scale(${c.zoom / 100})`; img.style.objectPosition = `${c.posX}% ${c.posY}%`; img.style.objectFit = c.fit; frame.appendChild(img) } else { let p = document.createElement('div'); p.className = 'placeholder'; p.textContent = '+'; frame.appendChild(p) } el.appendChild(frame); if (c.visible) { if (c.qty > 1) { let badge = document.createElement('span'); badge.className = 'qty'; badge.textContent = '×' + c.qty; el.appendChild(badge) } let rm = document.createElement('button'); rm.className = 'remove'; rm.title = 'Remove frame'; rm.textContent = '×'; rm.onclick = e => { e.stopPropagation(); selected = i; removeCard(i) }; el.appendChild(rm) } el.onclick = () => { selected = i; render() }; page.appendChild(el) }); let visible = cards.filter(c => c.visible).length; document.getElementById('statusText').textContent = `Selected slot ${selected + 1} • ${cards[selected].image ? 'Image loaded' : 'Empty slot'} • Qty ${cards[selected].qty} • ${visible}/10 frames visible`; updateButtons(); updateProperties() }
             function removeCard(i) { if (!cards[i].visible) return; save(); cards[i].visible = false; let visible = cards.map((c, j) => c.visible ? j : -1).filter(j => j >= 0); if (visible.length && !cards[selected].visible) selected = visible[0]; render() }
-            function addImage() { if (!cards[selected].visible) return; imageInput.value = ''; imageInput.click() }
-            imageInput.onchange = () => { let f = imageInput.files[0]; if (!f) return; let reader = new FileReader(); reader.onload = () => { save(); cards[selected].image = reader.result; cards[selected].angle = 0; render() }; reader.readAsDataURL(f) };
-            document.getElementById('addImageBtn').onclick = addImage;
-            document.getElementById('rotateLeft').onclick = () => rotate(-90); document.getElementById('rotateRight').onclick = () => rotate(90);
-            function rotate(deg) { if (!cards[selected].image) { alert('Add an image to the selected Polaroid first.'); return } save(); cards[selected].angle = (cards[selected].angle + deg + 360) % 360; render() }
-            document.getElementById('frameColorBtn').onclick = () => pickColor(cards[selected].color, c => { save(); cards[selected].color = c; render() });
-            document.getElementById('allFrameColorBtn').onclick = () => pickColor(cards[selected].color, c => { save(); cards.forEach(card => { if (card.visible) card.color = c }); render() });
-            document.getElementById('pageColorBtn').onclick = () => pickColor(pageColor, c => { save(); pageColor = c; if (fillMode === 'solid') render(); else render() });
-            function pickColor(initial, cb) { colorInput.value = initial; colorInput.onchange = () => cb(colorInput.value); colorInput.click() }
-            document.getElementById('fillBtn').onclick = () => { let mode = prompt('Page fill style:\n1 - Solid Color\n2 - Gradient\n3 - Pattern\n\nEnter 1, 2, or 3:', fillMode === 'solid' ? '1' : fillMode === 'gradient' ? '2' : '3'); if (mode === null) return; mode = mode.trim(); if (!['1', '2', '3'].includes(mode)) { alert('Invalid selection.'); return } save(); fillMode = ({ 1: 'solid', 2: 'gradient', 3: 'pattern' })[mode]; if (fillMode === 'gradient') { let a = prompt('Gradient start color (hex):', gradient[0]); if (a === null) return; let b = prompt('Gradient end color (hex):', gradient[1]); if (b === null) return; if (/^#[0-9a-f]{6}$/i.test(a) && /^#[0-9a-f]{6}$/i.test(b)) gradient = [a, b]; else alert('Invalid hex color. Keeping previous gradient colors.') } else if (fillMode === 'pattern') { let p = prompt('Pattern type:\n1 - Dots\n2 - Grid\n3 - Diagonal\n4 - Crosshatch', ({ 'dots': '1', 'grid': '2', 'diagonal': '3', 'crosshatch': '4' })[pattern]); if (p === null) return; pattern = ({ '1': 'dots', '2': 'grid', '3': 'diagonal', '4': 'crosshatch' })[p] || 'dots' } render() };
-            document.getElementById('removeBtn').onclick = () => removeCard(selected); document.getElementById('restoreBtn').onclick = () => { save(); cards.forEach(c => c.visible = true); render() };
-            document.getElementById('undoBtn').onclick = () => { if (!undoStack.length) return; redoStack.push(snapshot()); restore(undoStack.pop()) }; document.getElementById('redoBtn').onclick = () => { if (!redoStack.length) return; undoStack.push(snapshot()); restore(redoStack.pop()) };
-            document.getElementById('printBtn').onclick = () => window.print(); document.getElementById('exportBtn').onclick = () => window.print();
+            function loadFiles(files, startAtSelected = true) { const chosen = [...files].filter(f => f.type.startsWith('image/')); if (!chosen.length) return; let targets = []; if (startAtSelected) { targets.push(selected); for (let i = 0; i < cards.length; i++)if (i !== selected && cards[i].visible && !cards[i].image) targets.push(i) } else targets = cards.map((c, i) => c.visible && !c.image ? i : -1).filter(i => i >= 0); if (!targets.length) { alert('No empty visible slots. Remove/restore frames or replace an existing slot.'); return } save(); let count = Math.min(chosen.length, targets.length); let remaining = count; chosen.slice(0, count).forEach((file, k) => { let reader = new FileReader(); reader.onload = () => { let c = cards[targets[k]]; c.image = reader.result; c.angle = 0; c.zoom = 100; c.posX = 50; c.posY = 50; c.fit = 'cover'; c.qty = 1; remaining--; if (!remaining) { selected = targets[0]; render() } }; reader.readAsDataURL(file) }); if (chosen.length > targets.length) alert(`Loaded ${count} image(s). ${chosen.length - count} file(s) skipped because slots are full.`) }
+            imageInput.onchange = () => { if (imageInput.files.length) loadFiles(imageInput.files, true); imageInput.value = '' }; multiInput.onchange = () => { if (multiInput.files.length) loadFiles(multiInput.files, true); multiInput.value = '' };
+            document.getElementById('addImageBtn').onclick = () => { if (!cards[selected].visible) return; imageInput.click() }; document.getElementById('multiBtn').onclick = () => multiInput.click();
+            function rotate(deg) { if (!cards[selected].image) { alert('Add an image to the selected slot first.'); return } save(); cards[selected].angle = (cards[selected].angle + deg + 360) % 360; render() } document.getElementById('rotateLeft').onclick = () => rotate(-90); document.getElementById('rotateRight').onclick = () => rotate(90);
+            document.getElementById('qtyInput').onchange = e => { let n = Math.max(1, Math.min(99, parseInt(e.target.value) || 1)); save(); cards[selected].qty = n; render() }; document.getElementById('zoomInput').oninput = e => { cards[selected].zoom = +e.target.value; document.getElementById('zoomLabel').textContent = e.target.value + '%'; render() }; document.getElementById('zoomInput').onchange = () => save();['posX', 'posY'].forEach(id => { document.getElementById(id).oninput = e => { cards[selected][id] = +e.target.value; render() }; document.getElementById(id).onchange = () => save() }); document.getElementById('fitInput').onchange = e => { save(); cards[selected].fit = e.target.value; render() }; document.getElementById('propColor').onchange = e => { save(); cards[selected].color = e.target.value; render() }; document.getElementById('resetPhotoProps').onclick = () => { save(); let c = cards[selected]; c.angle = 0; c.zoom = 100; c.posX = 50; c.posY = 50; c.fit = 'cover'; c.qty = 1; c.color = '#ffffff'; render() };
+            document.getElementById('frameColorBtn').onclick = () => pickColor(cards[selected].color, c => { save(); cards[selected].color = c; render() }); document.getElementById('allFrameColorBtn').onclick = () => pickColor(cards[selected].color, c => { save(); cards.forEach(card => { if (card.visible) card.color = c }); render() }); document.getElementById('pageColorBtn').onclick = () => pickColor(pageColor, c => { save(); pageColor = c; render() }); function pickColor(initial, cb) { colorInput.value = initial; colorInput.onchange = () => cb(colorInput.value); colorInput.click() }
+            document.getElementById('fillBtn').onclick = () => { let mode = prompt('Page fill style:\n1 - Solid Color\n2 - Gradient\n3 - Pattern', fillMode === 'solid' ? '1' : fillMode === 'gradient' ? '2' : '3'); if (mode === null) return; mode = mode.trim(); if (!['1', '2', '3'].includes(mode)) { alert('Invalid selection.'); return } save(); fillMode = ({ '1': 'solid', '2': 'gradient', '3': 'pattern' })[mode]; if (fillMode === 'gradient') { let a = prompt('Gradient start color (hex):', gradient[0]); if (a === null) return; let b = prompt('Gradient end color (hex):', gradient[1]); if (b === null) return; if (/^#[0-9a-f]{6}$/i.test(a) && /^#[0-9a-f]{6}$/i.test(b)) gradient = [a, b]; else alert('Invalid hex color; kept previous gradient.') } else if (fillMode === 'pattern') { let p = prompt('Pattern type:\n1 - Dots\n2 - Grid\n3 - Diagonal\n4 - Crosshatch', ({ 'dots': '1', 'grid': '2', 'diagonal': '3', 'crosshatch': '4' })[pattern]); if (p === null) return; pattern = ({ '1': 'dots', '2': 'grid', '3': 'diagonal', '4': 'crosshatch' })[p] || 'dots' } render() };
+            document.getElementById('removeBtn').onclick = () => removeCard(selected); document.getElementById('restoreBtn').onclick = () => { save(); cards.forEach(c => c.visible = true); render() }; document.getElementById('undoBtn').onclick = () => { if (!undoStack.length) return; redoStack.push(snapshot()); restore(undoStack.pop()) }; document.getElementById('redoBtn').onclick = () => { if (!redoStack.length) return; undoStack.push(snapshot()); restore(redoStack.pop()) }; document.getElementById('printBtn').onclick = () => window.print(); document.getElementById('exportBtn').onclick = () => window.print();
+            page.addEventListener('dragover', e => { e.preventDefault(); page.classList.add('dragover') }); page.addEventListener('dragleave', () => page.classList.remove('dragover')); page.addEventListener('drop', e => { e.preventDefault(); page.classList.remove('dragover'); if (e.dataTransfer.files?.length) loadFiles(e.dataTransfer.files, true) });
             render();
-        })();
-    </script>
+        })();</script>
 </body>
 
 </html>
